@@ -1,0 +1,30 @@
+---
+
+- hosts: lb_servers
+  gather_facts: no
+  sudo: yes
+  tasks:
+    - copy: src=files/haproxy.cfg dest=/etc/haproxy/
+      notify: haproxy restart
+      tags: haproxy
+
+    - template: src=files/keepalived.conf dest=/etc/keepalived/
+      notify: keepalived restart
+      tags: keepalived
+
+    - service: name=haproxy state=started enabled=yes
+
+    - service: name=keepalived state=started enabled=yes
+
+  handlers:
+    - name: haproxy restart
+      service: name=haproxy state=restarted
+
+    - name: keepalived restart
+      service: name=keepalived state=restarted
+
+- hosts: web_servers
+  gather_facts: no
+  sudo: yes
+  tasks:
+    - service: name=httpd state=started enabled=yes
