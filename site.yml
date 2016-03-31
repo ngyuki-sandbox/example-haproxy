@@ -8,6 +8,10 @@
       notify: haproxy restart
       tags: haproxy
 
+    - copy: src=files/rsyslog.d/haproxy.conf dest=/etc/rsyslog.d/
+      notify: rsyslog restart
+      tags: haproxy
+
     - template: src=files/keepalived.conf dest=/etc/keepalived/
       notify: keepalived restart
       tags: keepalived
@@ -17,6 +21,9 @@
     - service: name=keepalived state=started enabled=yes
 
   handlers:
+    - name: rsyslog restart
+      service: name=rsyslog state=restarted
+
     - name: haproxy restart
       service: name=haproxy state=restarted
 
@@ -24,7 +31,27 @@
       service: name=keepalived state=restarted
 
 - hosts: web_servers
-  gather_facts: no
+  gather_facts: yes
   sudo: yes
   tasks:
+    - copy: dest=/var/www/html/index.html content="{{ ansible_fqdn }}\n"
+
+    - copy: dest=/var/www/html/ok.html content="OK\n"
+
+    - copy:
+        dest: /var/www/html/app.php
+        content: |
+          <?php
+          session_start();
+          header('Content-type: application/json');
+          echo json_encode(array(
+            'server' => php_uname('n'),
+            'headers' => apache_request_headers(),
+          ), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+          echo PHP_EOL;
+
+    - copy: dest=/var/www/html/app.css content="/* CSS */\n"
+    - copy: dest=/var/www/html/app.js content="/* JavaScript */\n"
+
     - service: name=httpd state=started enabled=yes
+    #- service: name=httpd state=stopped enabled=yes

@@ -4,29 +4,28 @@ Vagrant.configure(2) do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     sudo yum install -y epel-release
-    sudo yum install -y haproxy keepalived httpd ansible iptables-services
-    sudo cp -f -v /vagrant/hosts.ini /etc/ansible/hosts
+    sudo yum install -y haproxy keepalived httpd php ansible iptables-services
+    sudo cp -f -v /vagrant/inventory /etc/ansible/hosts
+    sudo cp -f -v /vagrant/hosts /etc/hosts
   SHELL
 
-  config.vm.define "ha1" do |cfg|
-    cfg.vm.hostname = "ha1"
-    cfg.vm.network "forwarded_port", guest: 80, host: 8081
+  config.vm.define "ha01" do |cfg|
+    cfg.vm.hostname = "ha01"
     cfg.vm.network "private_network", ip: "192.168.33.11"
   end
 
-  config.vm.define "ha2" do |cfg|
-    cfg.vm.hostname = "ha2"
-    cfg.vm.network "forwarded_port", guest: 80, host: 8082
+  config.vm.define "ha02" do |cfg|
+    cfg.vm.hostname = "ha02"
     cfg.vm.network "private_network", ip: "192.168.33.12"
   end
 
-  config.vm.define "sv1" do |cfg|
-    cfg.vm.hostname = "sv1"
+  config.vm.define "web01" do |cfg|
+    cfg.vm.hostname = "web01"
     cfg.vm.network "private_network", ip: "192.168.33.21"
   end
 
-  config.vm.define "sv2" do |cfg|
-    cfg.vm.hostname = "sv2"
+  config.vm.define "web02" do |cfg|
+    cfg.vm.hostname = "web02"
     cfg.vm.network "private_network", ip: "192.168.33.22"
   end
 

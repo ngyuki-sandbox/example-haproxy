@@ -5,3 +5,9 @@
 [web_servers]
 192.168.33.21
 192.168.33.22
+
+[lb:children]
+lb_servers
+
+[web:children]
+web_servers
