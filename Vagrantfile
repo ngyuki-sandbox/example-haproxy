@@ -4,7 +4,7 @@ Vagrant.configure(2) do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     sudo yum install -y epel-release
-    sudo yum install -y haproxy keepalived httpd php ansible iptables-services
+    sudo yum install -y haproxy keepalived httpd php ansible iptables-services expect
     sudo cp -f -v /vagrant/inventory /etc/ansible/hosts
     sudo cp -f -v /vagrant/hosts /etc/hosts
   SHELL

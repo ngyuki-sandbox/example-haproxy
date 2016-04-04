@@ -4,21 +4,39 @@
   gather_facts: no
   sudo: yes
   tasks:
+    # haproxy.cfg
     - copy: src=files/haproxy.cfg dest=/etc/haproxy/
       notify: haproxy restart
       tags: haproxy
 
-    - copy: src=files/rsyslog.d/haproxy.conf dest=/etc/rsyslog.d/
-      notify: rsyslog restart
-      tags: haproxy
-
-    - template: src=files/keepalived.conf dest=/etc/keepalived/
+    # keepalived.conf
+    - template: src=files/keepalived.conf.j2 dest=/etc/keepalived/
       notify: keepalived restart
       tags: keepalived
 
+    # rsyslog
+    - copy: src=files/rsyslog.d/{{ item }} dest=/etc/rsyslog.d/
+      notify: rsyslog restart
+      tags:
+        - haproxy
+        - keepalived
+      with_items:
+        - haproxy.conf
+        - keepalived.conf
+
+    # logrotate
+    - copy: src=files/logrotate.d/{{ item }} dest=/etc/logrotate.d/
+      tags:
+        - keepalived
+      with_items:
+        - keepalived
+
+    # service started
     - service: name=haproxy state=started enabled=yes
+      tags: haproxy
 
     - service: name=keepalived state=started enabled=yes
+      tags: keepalived
 
   handlers:
     - name: rsyslog restart
@@ -54,4 +72,3 @@
     - copy: dest=/var/www/html/app.js content="/* JavaScript */\n"
 
     - service: name=httpd state=started enabled=yes
-    #- service: name=httpd state=stopped enabled=yes
