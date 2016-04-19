@@ -56,17 +56,7 @@
 
     - copy: dest=/var/www/html/ok.html content="OK\n"
 
-    - copy:
-        dest: /var/www/html/app.php
-        content: |
-          <?php
-          session_start();
-          header('Content-type: application/json');
-          echo json_encode(array(
-            'server' => php_uname('n'),
-            'headers' => apache_request_headers(),
-          ), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
-          echo PHP_EOL;
+    - copy: src=files/app.php dest=/var/www/html/app.php
 
     - copy: dest=/var/www/html/app.css content="/* CSS */\n"
     - copy: dest=/var/www/html/app.js content="/* JavaScript */\n"
