@@ -1,5 +1,7 @@
 127.0.0.1     localhost localhost.localdomain localhost4 localhost4.localdomain4
 192.168.33.11 ha01
 192.168.33.12 ha02
+192.168.33.13 ha03
+192.168.33.14 ha04
 192.168.33.21 web01
 192.168.33.22 web02
